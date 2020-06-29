@@ -109,4 +109,64 @@ public class FoodDao {
 		}
 
 	}
+	
+	public List<Food> ordersByPortion(int portions){
+		String sql="SELECT f.food_code, f.display_name COUNT(DISRINCT p.portion_id) AS cnt FROM food f, portion p, WHERE f.food_code = p.food_code GROUP BY f.food_code HAVING cnt = ? ORDER BY diplay_name ASC";
+		List<Food> result = new ArrayList<>(); 
+		try {
+			Connection conn = DBConnect.getConnection() ;
+
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			
+			st.setInt(1, portions);
+	
+			
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+				result.add(new Food(res.getInt("food_code"), res.getString("display_name"))); 
+			}
+			
+			conn.close();
+			return result; 
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null ;
+		}
+	
+	
+	
+	}
+	
+	
+	public Double calorieCongiunte(Food f1, Food f2) {
+		String sql ="SELECT fc1.condiment_code, fc2.condiment_code, AVG(c.condiment_calories) FROM food_condiment fc1, food_comdiment fc2  ,condiment c WHERE  fc1.condiment_code=fc2.condiment_code  AND c.condiment_code = fc1.condiment_code AND fc1.food_code!=fc2.food_code GROUP BY fc1.food_code, fc2.food_code ";
+		
+		try {
+			Connection conn = DBConnect.getConnection() ;
+
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			
+			st.setInt(1, portions);
+	
+			
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+				result.add(new Food(res.getInt("food_code"), res.getString("display_name"))); 
+			}
+			
+			conn.close();
+			return result; 
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null ;
+		}
+	
+		
+		return null;
+	} 
+	
 }
